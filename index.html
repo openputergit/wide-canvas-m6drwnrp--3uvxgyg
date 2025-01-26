@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDB Diamond Bourse - Key Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-gray-50 font-[Inter]">
+    <div id="app" class="min-h-screen">
+        <!-- Login/Register Container -->
+        <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-bold text-gray-800">Key Management System</h1>
+                    <p class="text-gray-600">SDB Diamond Bourse</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="loginEmail" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="loginPassword" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" class="h-4 w-4 text-blue-600">
+                            <label for="remember" class="ml-2 text-sm text-gray-600">Remember me</label>
+                        </div>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <button onclick="toggleForms()" class="text-blue-600 hover:text-blue-800 text-sm">
+                        Don't have an account? Register
+                    </button>
+                </div>
+
+                <!-- Register Form (Hidden by default) -->
+                <form id="registerForm" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="regName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="regEmail" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="regPassword" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Register
+                    </button>
+                    <div class="text-center">
+                        <button type="button" onclick="toggleForms()" class="text-blue-600 hover:text-blue-800 text-sm">
+                            Already have an account? Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Container (Hidden by default) -->
+        <div id="dashboard-container" class="hidden">
+            <!-- Sidebar -->
+            <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white p-4">
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold">Key Management</h2>
+                    <p class="text-sm text-gray-400">Admin Dashboard</p>
+                </div>
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700" onclick="showSection('keys')">
+                        <i class="bi bi-key"></i>
+                        <span>Keys</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700" onclick="showSection('users')">
+                        <i class="bi bi-people"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700" onclick="showSection('activities')">
+                        <i class="bi bi-activity"></i>
+                        <span>Activities</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="ml-64 p-8">
+                <!-- Keys Section -->
+                <div id="keys-section" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">Keys Management</h2>
+                        <button onclick="showAddKeyModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            Add New Key
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2">Key ID</th>
+                                    <th class="text-left py-2">Location</th>
+                                    <th class="text-left py-2">Status</th>
+                                    <th class="text-left py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keys-table-body">
+                                <!-- Keys will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div id="users-section" class="hidden space-y-6">
+                    <h2 class="text-2xl font-bold">Users Management</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2">Name</th>
+                                    <th class="text-left py-2">Email</th>
+                                    <th class="text-left py-2">Role</th>
+                                    <th class="text-left py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Users will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activities Section -->
+                <div id="activities-section" class="hidden space-y-6">
+                    <h2 class="text-2xl font-bold">Activity Log</h2>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div id="activity-log" class="space-y-4">
+                            <!-- Activities will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated database
+        let keys = [];
+        let users = [];
+        let activities = [];
+        let currentUser = null;
+
+        // Toggle between login and register forms
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            loginForm.classList.toggle('hidden');
+            registerForm.classList.toggle('hidden');
+        }
+
+        // Show different sections in dashboard
+        function showSection(section) {
+            document.getElementById('keys-section').classList.add('hidden');
+            document.getElementById('users-section').classList.add('hidden');
+            document.getElementById('activities-section').classList.add('hidden');
+            
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simulate login
+            currentUser = { email, role: 'admin' };
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('dashboard-container').classList.remove('hidden');
+            loadDashboardData();
+        });
+
+        // Register form submission
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            users.push({ name, email, role: 'user' });
+            toggleForms();
+        });
+
+        // Load dashboard data
+        function loadDashboardData() {
+            // Simulate loading keys
+            keys = [
+                { id: 'K001', location: 'Office 101', status: 'Available' },
+                { id: 'K002', location: 'Office 102', status: 'Issued' },
+            ];
+            
+            // Simulate loading users
+            users = [
+                { name: 'John Doe', email: 'john@example.com', role: 'admin' },
+                { name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
+            ];
+            
+            // Simulate loading activities
+            activities = [
+                { type: 'Key Issued', details: 'Key K001 issued to John Doe', timestamp: new Date() },
+                { type: 'New User', details: 'Jane Smith registered', timestamp: new Date() },
+            ];
+            
+            updateDashboard();
+        }
+
+        // Update dashboard tables
+        function updateDashboard() {
+            // Update keys table
+            const keysBody = document.getElementById('keys-table-body');
+            keysBody.innerHTML = keys.map(key => `
+                <tr class="border-b">
+                    <td class="py-2">${key.id}</td>
+                    <td>${key.location}</td>
+                    <td>${key.status}</td>
+                    <td>
+                        <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                        <button class="text-red-600 hover:text-red-800">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Update users table
+            const usersBody = document.getElementById('users-table-body');
+            usersBody.innerHTML = users.map(user => `
+                <tr class="border-b">
+                    <td class="py-2">${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                        <button class="text-red-600 hover:text-red-800">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Update activity log
+            const activityLog = document.getElementById('activity-log');
+            activityLog.innerHTML = activities.map(activity => `
+                <div class="border-b pb-4">
+                    <div class="font-medium">${activity.type}</div>
+                    <div class="text-sm text-gray-600">${activity.details}</div>
+                    <div class="text-xs text-gray-500">${activity.timestamp.toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('dashboard-container').classList.add('hidden');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
